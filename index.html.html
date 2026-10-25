@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrera &amp; Bici — Calculadora de tiempos</title>
+<style>
+:root{--navy:#10243a;--blue:#1688ef;--pale:#eef7ff;--text:#14263c;--muted:#5e7188;--line:#d8e5f1}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f8fc;color:var(--text)}
+header{background:var(--navy);color:white;padding:20px 22px}.bar{max-width:980px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-size:21px;font-weight:800}.brand span{color:#45adff}.tag{font-size:12px;color:#c4d8ed}
+main{max-width:940px;margin:40px auto;padding:0 18px}.intro{margin-bottom:24px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--blue);text-transform:uppercase}h1{font-size:clamp(30px,5vw,44px);line-height:1.08;margin:10px 0}p{color:var(--muted);line-height:1.6}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 8px 28px #19395b0b}.result{background:linear-gradient(145deg,#eaf5ff,#f9fcff);border-color:#cce5ff;display:flex;flex-direction:column;justify-content:center}h2{font-size:20px;margin:0 0 7px}.sub{font-size:14px;margin:0 0 20px}
+label{display:block;font-weight:700;font-size:14px;margin:16px 0 8px}input,select{width:100%;padding:13px 12px;border:1px solid #cbd9e8;border-radius:10px;background:#fff;font-size:16px;color:var(--text)}input:focus,select:focus{outline:2px solid #80c3ff;border-color:var(--blue)}.hint{font-size:12px;color:var(--muted);margin-top:6px}
+button{border:0;border-radius:11px;background:var(--blue);color:white;font-weight:800;font-size:16px;padding:14px;cursor:pointer}button:hover{background:#0874d5}.actions{display:flex;gap:10px;align-items:center;margin-top:20px}.actions button:first-child{flex:1}.swap{background:#e7f3ff;color:#135b98;font-size:14px;padding:14px 12px}
+.result-label{font-weight:700;color:#285477}.time{font-size:clamp(32px,5vw,46px);font-weight:900;letter-spacing:-1px;color:#0d2e61;margin:14px 0}.speed{display:inline-block;align-self:flex-start;border-radius:99px;background:#d7ebff;color:#174c7d;padding:8px 12px;font-size:13px;font-weight:700}
+.note{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;font-size:13px;color:var(--muted);line-height:1.55}.note strong{color:var(--text)}.error{display:none;color:#a52323;font-size:13px;margin-top:12px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.feature{font-size:13px;color:var(--muted);background:white;border:1px solid var(--line);border-radius:12px;padding:14px}.feature b{display:block;color:var(--text);margin-bottom:5px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:28px 16px}
+@media(max-width:700px){main{margin:26px auto}.layout{grid-template-columns:1fr}.features{grid-template-columns:1fr}.panel{padding:20px}.tag{display:none}}
+</style>
+</head>
+<body>
+<header><div class="bar"><div class="brand">CARRERA <span>&amp; BICI</span></div><div class="tag">CONVERSOR DE MARCAS</div></div></header>
+<main>
+<section class="intro"><div class="eyebrow">Carrera ⇄ ciclismo</div><h1>Tu marca en un deporte.<br>Una estimación en el otro.</h1><p>Elige qué deporte has hecho, introduce la distancia y el tiempo, y calcula una estimación para la otra disciplina.</p></section>
+<div class="layout">
+<section class="panel">
+<h2>Introduce tu marca</h2><p class="sub">Puedes cambiar la dirección con el botón de intercambio.</p>
+<label for="origin">Deporte que has hecho</label><select id="origin"><option value="run">🏃 Carrera</option><option value="bike">🚴 Ciclismo</option></select>
+<label for="sourceDistance" id="sourceDistanceLabel">Distancia corriendo (km)</label><input id="sourceDistance" type="number" min="0.1" step="0.1" value="10">
+<label for="sourceTime">Tiempo conseguido (hh:mm:ss)</label><input id="sourceTime" type="text" value="00:50:00" placeholder="00:50:00"><div class="hint">Ejemplo: 00:50:00 son 50 minutos.</div>
+<label for="targetDistance" id="targetDistanceLabel">Distancia objetivo en bici (km)</label><input id="targetDistance" type="number" min="0.1" step="0.1" value="40">
+<div class="actions"><button id="calc">Calcular estimación</button><button class="swap" id="swap" type="button" title="Intercambiar carrera y ciclismo">⇄ Cambiar</button></div>
+<div class="error" id="error" role="alert">Comprueba que las distancias sean mayores que cero y el tiempo esté en formato hh:mm:ss o mm:ss.</div>
+</section>
+<section class="panel result" aria-live="polite">
+<div class="result-label" id="resultLabel">⏱ Tiempo estimado en bicicleta</div><div class="time" id="resultTime">01:20:00</div><div class="speed" id="resultPace">Velocidad media estimada: 30,0 km/h</div>
+<div class="note"><strong>Importante sobre la estimación</strong><br>Para poder convertir en ambos sentidos, esta versión usa una equivalencia simplificada: la velocidad de ciclismo se supone 2,5 veces la velocidad de carrera. Es solo una hipótesis de demostración, no una fórmula validada ni una predicción fiable para cada deportista. Como referencia inicial para aficionados, esta calculadora usa tu ejemplo: 10 km corriendo en 50 min y 21 km en bici en 50 min. La relación no es universal: depende del nivel en cada deporte, recorrido, desnivel, viento y condiciones.</div>
+</section>
+</div>
+<div class="features"><div class="feature"><b>↔ En ambos sentidos</b>Carrera a bici o bici a carrera.</div><div class="feature"><b>⚡ Rápido y sencillo</b>Solo distancia y tiempo.</div><div class="feature"><b>📱 Adaptado a móvil</b>Funciona en ordenador y teléfono.</div></div>
+</main>
+<footer>Triatlón Calc · Estimaciones orientativas, no garantías de rendimiento.</footer>
+<script>
+const $=id=>document.getElementById(id);
+// Referencia inicial configurable para aficionados:
+ // 10 km corriendo en 50 min se toma como equivalente orientativo
+ // a 21 km en bicicleta en 50 min. No es una equivalencia universal.
+const REF_RUN_KM=10;
+const REF_RUN_SECONDS=50*60;
+const REF_BIKE_KM=21;
+const REF_BIKE_SECONDS=50*60;
+const REF_RUN_SPEED=REF_RUN_KM/(REF_RUN_SECONDS/3600);
+const REF_BIKE_SPEED=REF_BIKE_KM/(REF_BIKE_SECONDS/3600);
+const FACTOR_BICI_CARRERA=REF_BIKE_SPEED/REF_RUN_SPEED;
+function parseTime(s){const p=s.trim().split(":").map(Number);if((p.length!==2&&p.length!==3)||p.some(n=>!Number.isFinite(n)||n<0))return NaN;return p.length===2?p[0]*60+p[1]:p[0]*3600+p[1]*60+p[2]}
+function formatTime(n){n=Math.round(n);const h=Math.floor(n/3600),m=Math.floor((n%3600)/60),s=n%60;return [h,m,s].map(x=>String(x).padStart(2,"0")).join(":")}
+function updateLabels(){const run=$("origin").value==="run";$("sourceDistanceLabel").textContent=run?"Distancia corriendo (km)":"Distancia en bicicleta (km)";$("targetDistanceLabel").textContent=run?"Distancia objetivo en bici (km)":"Distancia objetivo corriendo (km)";$("resultLabel").textContent=run?"⏱ Tiempo estimado en bicicleta":"⏱ Tiempo estimado corriendo"}
+function calculate(){const origin=$("origin").value,d=Number($("sourceDistance").value),t=parseTime($("sourceTime").value),target=Number($("targetDistance").value);if(!(d>0&&t>0&&target>0)){$("error").style.display="block";return}$("error").style.display="none";const sourceSpeed=d/(t/3600);let targetSpeed,seconds;
+if(origin==="run"){targetSpeed=sourceSpeed*FACTOR_BICI_CARRERA;seconds=target/targetSpeed*3600;$("resultPace").textContent="Velocidad media estimada: "+targetSpeed.toLocaleString("es-ES",{minimumFractionDigits:1,maximumFractionDigits:1})+" km/h"}
+else{targetSpeed=sourceSpeed/FACTOR_BICI_CARRERA;seconds=target/targetSpeed*3600;$("resultPace").textContent="Ritmo medio estimado: "+(60/targetSpeed).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})+" min/km"}
+$("resultTime").textContent=formatTime(seconds)}
+$("origin").addEventListener("change",()=>{const run=$("origin").value==="run";$("sourceDistance").value=run?10:40;$("sourceTime").value=run?"00:50:00":"01:20:00";$("targetDistance").value=run?40:10;updateLabels();calculate()});
+$("swap").addEventListener("click",()=>{$("origin").value=$("origin").value==="run"?"bike":"run";const run=$("origin").value==="run";$("sourceDistance").value=run?10:40;$("sourceTime").value=run?"00:50:00":"01:20:00";$("targetDistance").value=run?40:10;updateLabels();calculate()});
+$("calc").addEventListener("click",calculate);updateLabels();calculate();
+</script>
+</body></html>
